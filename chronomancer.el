@@ -4,6 +4,7 @@
 
 ;;; Code:
 (require 'thingatpt)
+(require 'eldoc)
 
 (defvar chrono/epoch-time-regexp "[0-9]\\{13\\}\\b")
 (defvar chrono/date-format "%Y-%m-%d")
@@ -54,18 +55,17 @@ will be revisited."
 ;; ...doesn't currently work.
 (defun chrono/eldoc-function ()
   "Echo a human-readable date-time representation in the echo ara via ElDoc."
-  (let (millis-str)
-    (if (setq millis-str (thing-at-point 'chrono/millis t))
+  (let ((millis-str (thing-at-point 'chrono/millis t)))
+    (if millis-str
         (chrono/millis-to-iso-date-time (string-to-number millis-str))
       nil)))
-
-(set (make-local-variable 'eldoc-documentation-function)
-     'chrono/eldoc-function)
 
 (define-minor-mode chronomancer-mode
   "A minor mode for working with time"
   :lighter " chrono"
-  :keymap chrono/key-map)
+  :keymap chrono/key-map
+  (add-function :before-until (local 'eldoc-documentation-function)
+                #'chrono/eldoc-function))
 
 (provide 'chronomancer)
 ;;; chronomancer.el ends here
