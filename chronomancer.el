@@ -50,6 +50,18 @@ will be revisited."
     (define-key map (kbd "C-x t d") #'chrono/echo-millis-at-point)
     map))
 
+;; ElDoc support
+;; ...doesn't currently work.
+(defun chrono/eldoc-function ()
+  "Echo a human-readable date-time representation in the echo ara via ElDoc."
+  (let (millis-str)
+    (if (setq millis-str (thing-at-point 'chrono/millis t))
+        (chrono/millis-to-iso-date-time (string-to-number millis-str))
+      nil)))
+
+(set (make-local-variable 'eldoc-documentation-function)
+     'chrono/eldoc-function)
+
 (define-minor-mode chronomancer-mode
   "A minor mode for working with time"
   :lighter " chrono"
