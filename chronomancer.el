@@ -5,7 +5,7 @@
 ;;; Code:
 (require 'thingatpt)
 
-(defvar chrono/epoch-time-regexp "[0-9]\\{13\\}")
+(defvar chrono/epoch-time-regexp "[0-9]\\{13\\}\\b")
 (defvar chrono/date-format "%Y-%m-%d")
 (defvar chrono/date-time-format "%Y-%m-%d %T.%3N")
 
@@ -34,8 +34,10 @@ will be revisited."
 (defun chrono/echo-millis-at-point ()
   "Hi."
   (interactive)
-  (let ((millis (string-to-number (thing-at-point 'chrono/millis t))))
-    (message (chrono/millis-to-iso-date-time millis))))
+  (let ((millis-str))
+    (if (setq millis-str (thing-at-point 'chrono/millis t))
+        (message (chrono/millis-to-iso-date-time (string-to-number millis-str)))
+      (message "Thing-at-point not recognized as date; see variable chrono/epoch-time-regexp"))))
 
 (defun chrono/insert-iso-date ()
   "Insert the current date in ISO format."
