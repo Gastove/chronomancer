@@ -6,6 +6,8 @@
 (require 'thingatpt)
 
 (defvar chrono/epoch-time-regexp "[0-9]\\{13\\}")
+(defvar chrono/date-format "%Y-%m-%d")
+(defvar chrono/date-time-format "%Y-%m-%d %T.%3N")
 
 (defun chrono/find-bounds-of-millis ()
   "Defines a new `chrono/millis' type, to be passed to `thing-at-point'.
@@ -27,7 +29,7 @@ will be revisited."
 (defun chrono/millis-to-iso-date-time (millis)
   "Convert MILLIS to an ISO-formatted string."
   (let ((time (seconds-to-time (/ millis 1000))))
-    (format-time-string "%Y-%m-%d %T.%3N" time)))
+    (format-time-string chrono/date-time-format time)))
 
 (defun chrono/echo-millis-at-point ()
   "Hi."
@@ -38,7 +40,7 @@ will be revisited."
 (defun chrono/insert-iso-date ()
   "Insert the current date in ISO format."
   (interactive)
-  (insert (format-time-string "%Y-%m-%d" (current-time))))
+  (insert (format-time-string chrono/date-format (current-time))))
 
 (defvar chrono/key-map
   (let ((map (make-sparse-keymap)))
