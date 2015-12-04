@@ -66,7 +66,6 @@ will be revisited."
     map))
 
 ;; ElDoc support
-;; ...doesn't currently work.
 (defun chrono/eldoc-function ()
   "Echo a human-readable date-time representation in the echo ara via ElDoc."
   (let ((millis-str (thing-at-point 'chrono/millis t)))
@@ -74,12 +73,40 @@ will be revisited."
         (chrono/millis-to-iso-date-time (string-to-number millis-str))
       nil)))
 
+;; Not convinced the eldoc stuff will work well in the long term.
+;; Have no evidence that a buffer can have more than one eldoc function
+(defun chrono/setup-eldoc ()
+  "Turn on eldoc support."
+  (if eldoc-documentation-function
+      (add-function :before-until
+                    (local 'eldoc-documentation-function)
+                    #'chrono/eldoc-function)
+    (setq-local eldoc-documentation-function #'chrono/eldoc-function)))
+
+;;;###autoload
 (define-minor-mode chronomancer-mode
   "A minor mode for working with time"
   :lighter " chrono"
   :keymap chrono/key-map
-  (add-function :before-until (local 'eldoc-documentation-function)
-                #'chrono/eldoc-function))
+  :group 'chronomancer
+  ;; Turn on eldoc
+  (chrono/setup-eldoc)
+  (if chronomancer-mode
+      (chrono/add-font-lock-keywords)
+    (chrono/remove-font-lock-keywords))
+  (if (fboundp 'font-lock-flush)
+      (font-lock-flush)
+    (when font-lock-mode
+      (with-no-warnings
+        (font-lock-fontify-buffer)))))
+
+(defun chrono/add-font-lock-keywords (&optional mode)
+  "Thing MODE stuff."
+  (font-lock-add-keywords mode chrono/font-lock-keywords 'append))
+
+(defun chrono/remove-font-lock-keywords (&optional mode)
+  "Different thing MODE stuff."
+  (font-lock-remove-keywords mode chrono/font-lock-keywords))
 
 (provide 'chronomancer)
 ;;; chronomancer.el ends here
