@@ -10,6 +10,20 @@
 (defvar chrono/date-format "%Y-%m-%d")
 (defvar chrono/date-time-format "%Y-%m-%d %T.%3N")
 
+(defgroup chronomancer nil
+  "A minor mode for working with time"
+  :prefix "chrono/"
+  :group 'emacs)
+
+(defface chrono/time-face
+  '((t (:inherit font-lock-doc-face)))
+  "Face to apply to matched time representations"
+  :group 'chronomancer)
+(defvar chrono/time-face 'chrono/time-face)
+
+(defvar chrono/font-lock-keywords
+  `((,chrono/epoch-time-regexp . chrono/time-face)))
+
 (defun chrono/find-bounds-of-millis ()
   "Defines a new `chrono/millis' type, to be passed to `thing-at-point'.
 
